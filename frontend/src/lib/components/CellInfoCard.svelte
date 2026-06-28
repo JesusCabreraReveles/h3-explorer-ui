@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { selectedCell } from '$lib/stores/explorer';
 	import { formatArea, formatLatLng, formatLength } from '$lib/utils/format';
+	import { boundaryToCSV, cellInfoToGeoJSON } from '$lib/utils/export';
 	import RelationChips from './RelationChips.svelte';
+	import ExportMenu from './ExportMenu.svelte';
 
 	let copied = $state(false);
 	let showBoundary = $state(false);
@@ -102,6 +104,33 @@
 					{/each}
 				</ol>
 			{/if}
+		</div>
+
+		<!-- Export the inspected cell. -->
+		<div class="space-y-1.5 border-t border-edge pt-3">
+			<span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Export</span>
+			<ExportMenu
+				items={[
+					{
+						label: 'GeoJSON',
+						content: cellInfoToGeoJSON(cell),
+						filename: `${cell.index}.geojson`,
+						mime: 'application/geo+json'
+					},
+					{
+						label: 'Boundary CSV',
+						content: boundaryToCSV(cell.boundary),
+						filename: `${cell.index}-boundary.csv`,
+						mime: 'text/csv'
+					},
+					{
+						label: 'Index',
+						content: cell.index,
+						filename: `${cell.index}.txt`,
+						mime: 'text/plain'
+					}
+				]}
+			/>
 		</div>
 	</div>
 {:else}

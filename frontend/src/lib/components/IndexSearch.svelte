@@ -30,7 +30,7 @@
 		/>
 		<button
 			type="submit"
-			disabled={$loading || !valid}
+			disabled={$loading}
 			class="rounded-md border border-edge bg-surface-800 px-3 py-1.5 text-sm text-slate-300 transition hover:border-accent hover:text-accent disabled:opacity-40 disabled:hover:border-edge disabled:hover:text-slate-300"
 		>
 			Inspect

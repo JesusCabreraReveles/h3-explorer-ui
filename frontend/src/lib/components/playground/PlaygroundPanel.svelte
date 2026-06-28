@@ -1,7 +1,10 @@
 <script lang="ts">
 	import ToolPicker from './ToolPicker.svelte';
+	import ExportMenu from '../ExportMenu.svelte';
+	import KeyboardHints from '../KeyboardHints.svelte';
 	import { resolve } from '$app/paths';
 	import { MAX_RESOLUTION, MIN_RESOLUTION } from '$lib/config';
+	import { cellsToGeoJSON, indexesToText } from '$lib/utils/export';
 	import {
 		animateDisk,
 		cells,
@@ -155,6 +158,28 @@
 				{$errorMessage}
 			</p>
 		{/if}
+		{#if $cells.length > 0}
+			<div class="space-y-1.5 border-t border-edge pt-2">
+				<span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Export</span
+				>
+				<ExportMenu
+					items={[
+						{
+							label: 'GeoJSON',
+							content: cellsToGeoJSON($cells),
+							filename: `h3-${$tool}-r${$resolution}.geojson`,
+							mime: 'application/geo+json'
+						},
+						{
+							label: 'Indexes',
+							content: indexesToText($cells),
+							filename: `h3-${$tool}-r${$resolution}.txt`,
+							mime: 'text/plain'
+						}
+					]}
+				/>
+			</div>
+		{/if}
 		{#if $cells.length > 0 || $draftPolygon.length > 0}
 			<button
 				type="button"
@@ -166,7 +191,19 @@
 		{/if}
 	</section>
 
+	<KeyboardHints
+		hints={[
+			{ keys: ['1', '2', '3'], label: 'Select tool' },
+			{ keys: ['+', '−'], label: 'Resolution' },
+			{ keys: ['A'], label: 'Animate disk' },
+			{ keys: ['L'], label: 'Toggle labels' },
+			{ keys: ['B'], label: 'Toggle boundaries' },
+			{ keys: ['↵'], label: 'Close polygon' },
+			{ keys: ['Esc'], label: 'Clear' }
+		]}
+	/>
+
 	<footer class="mt-auto border-t border-edge pt-3 text-[11px] text-slate-600">
-		Phase 5 · H3 Playground
+		H3 Playground
 	</footer>
 </aside>

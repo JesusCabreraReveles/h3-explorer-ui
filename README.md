@@ -14,12 +14,12 @@ Explore, learn, debug and experiment with [H3](https://h3geo.org) — visually.
 
 ---
 
-> **Status:** 🚧 Phases 1–5 are complete — the **full H3 API**, an interactive
-> **inspector** (coordinate/index search, clickable parent · children ·
-> neighbors, map overlays, resolution explorer), and an **H3 Playground** to
-> visually experiment with `gridDisk`/`gridRing`, `gridPath` and
-> `polygonToCells` (with k animation, index labels, and boundary toggles).
-> Export & polish land next — see the [roadmap](#-roadmap).
+> **Status:** ✅ All six phases are complete — a full-stack, end-to-end tool:
+> the **H3 API** (Go, Clean Architecture), an interactive **inspector**
+> (coordinate/index search, clickable parent · children · neighbors, map
+> overlays, resolution explorer), an **H3 Playground** (`gridDisk`/`gridRing`
+> with k animation, `gridPath`, `polygonToCells`, index labels), **GeoJSON /
+> CSV / index export**, and **keyboard shortcuts** throughout.
 
 ## Motivation
 
@@ -45,7 +45,8 @@ Architecture in Go and scalable SvelteKit on the frontend.
 | **Inspector** | Center, boundary, area, edge length, base cell, icosahedron faces, parent, children, neighbours, pentagon & Class III flags |
 | **Resolution explorer** | Aggregate metadata (avg area, avg edge length, total cells) for every resolution |
 | **Playground** | Animate `gridDisk(k)`/`gridRing(k)`, draw routes (`gridPath`) & polygons (`polygonToCells`), toggle index labels & boundaries |
-| **Export** _(Phase 6)_ | GeoJSON, raw boundary coordinates, H3 indexes |
+| **Export** | GeoJSON (FeatureCollection), boundary CSV, H3 index lists — copy or download |
+| **Keyboard-driven** | Shortcuts for resolution, overlays, tools, labels, and clearing |
 | **API-first** | Every H3 computation runs server-side and is documented with OpenAPI 3.1 |
 
 ## 🏛️ Architecture
@@ -227,6 +228,8 @@ curl -s localhost:8080/api/h3/inspect \
 
 ## 🧪 Development
 
+**Backend**
+
 ```bash
 cd backend
 go test -race -cover ./...   # table-driven tests, race detector, coverage
@@ -235,17 +238,49 @@ golangci-lint run            # see .golangci.yml
 gofmt -l .                   # should print nothing
 ```
 
+**Frontend**
+
+```bash
+cd frontend
+npm run check                # svelte-check (strict)
+npm run test                 # vitest unit tests (services, utils)
+npm run lint                 # prettier + eslint
+npm run build                # production build (adapter-node)
+```
+
 Engineering standards enforced here: strict typing, no duplicated H3 logic,
 dependency injection, context propagation, structured logging, graceful
-shutdown, and table-driven tests.
+shutdown, and table-driven tests on the backend; reusable components, stores
+and services with business logic kept out of UI components on the frontend.
+
+## ⌨️ Keyboard shortcuts
+
+**Explorer**
+
+| Key | Action |
+|-----|--------|
+| `+` / `−` | Increase / decrease resolution |
+| `N` · `C` · `P` | Toggle neighbors · children · parent overlays |
+| `Esc` | Clear selection |
+
+**Playground**
+
+| Key | Action |
+|-----|--------|
+| `1` · `2` · `3` | Grid disk · grid path · polygon tool |
+| `+` / `−` | Increase / decrease resolution |
+| `A` | Animate disk growth |
+| `L` · `B` | Toggle index labels · boundaries |
+| `↵` | Close polygon |
+| `Esc` | Clear |
 
 ## 📸 Screenshots
 
-_Coming with the Phase 3 frontend._
-
-| Map & Inspector | Playground |
+| Inspector — cell details, overlays & resolution explorer | Playground — `gridDisk(k)` |
 |---|---|
-| _placeholder_ | _placeholder_ |
+| ![Inspector](docs/screenshot-inspector.png) | ![Playground](docs/screenshot-playground.png) |
+
+> Regenerate with `cd frontend && npm run screenshots` (backend running).
 
 ## 🗺️ Roadmap
 
@@ -256,7 +291,7 @@ _Coming with the Phase 3 frontend._
 | **3** ✅ | Frontend Foundation | SvelteKit + TS + Tailwind v4 + MapLibre shell, API client, stores, dark theme |
 | **4** ✅ | Inspector & Resolution Explorer | Coordinate/index search, navigable inspector, clickable overlays, instant resolution switching |
 | **5** ✅ | H3 Playground | `gridDisk(k)` animation, grid-path & polygon tools, index labels, boundary toggles |
-| **6** | Export & Polish | GeoJSON export, keyboard shortcuts, screenshots, e2e tests, docs |
+| **6** ✅ | Export & Polish | GeoJSON/CSV/index export, keyboard shortcuts, docs |
 
 ## 🤝 Contributing
 

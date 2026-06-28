@@ -5,6 +5,7 @@
 	import LayerToggles from './LayerToggles.svelte';
 	import CellInfoCard from './CellInfoCard.svelte';
 	import ResolutionExplorer from './ResolutionExplorer.svelte';
+	import KeyboardHints from './KeyboardHints.svelte';
 	import { resolve } from '$app/paths';
 	import { errorMessage } from '$lib/stores/explorer';
 
@@ -75,7 +76,17 @@
 		{/if}
 	</div>
 
+	<KeyboardHints
+		hints={[
+			{ keys: ['+', '−'], label: 'Resolution' },
+			{ keys: ['N'], label: 'Toggle neighbors' },
+			{ keys: ['C'], label: 'Toggle children' },
+			{ keys: ['P'], label: 'Toggle parent' },
+			{ keys: ['Esc'], label: 'Clear selection' }
+		]}
+	/>
+
 	<footer class="mt-auto border-t border-edge pt-3 text-[11px] text-slate-600">
-		Phase 4 · Inspector & Resolution Explorer
+		Inspector & Resolution Explorer
 	</footer>
 </aside>
