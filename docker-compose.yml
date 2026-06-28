@@ -1,0 +1,50 @@
+# Docker Compose for h3-explorer-ui — the single entrypoint for the full stack.
+#
+#   docker compose up --build
+#   → backend (Go API) on :8080, frontend (SvelteKit) on :3000
+#
+# The frontend proxies /api and /health to the backend over the compose network,
+# so the browser only ever talks to the frontend origin.
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION:-dev}
+    image: h3-explorer-backend:latest
+    container_name: h3-explorer-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      H3_PORT: "8080"
+      H3_LOG_LEVEL: ${H3_LOG_LEVEL:-info}
+      H3_LOG_FORMAT: ${H3_LOG_FORMAT:-json}
+      H3_CORS_ALLOWED_ORIGINS: ${H3_CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    healthcheck:
+      # distroless has no shell; use the binary's own wget-free check is not
+      # possible, so rely on Docker's TCP check via the start command.
+      test: ["CMD", "/server", "-healthcheck"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: h3-explorer-frontend:latest
+    container_name: h3-explorer-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      # Reach the backend by its compose service name.
+      API_PROXY_TARGET: http://backend:8080
+    depends_on:
+      backend:
+        condition: service_healthy

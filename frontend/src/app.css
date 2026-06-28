@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/*
+ * Design tokens for the dark, developer-oriented UI. Declaring colors under
+ * @theme makes them available as Tailwind utilities (bg-surface-900,
+ * text-accent, border-edge, …).
+ */
+@theme {
+	--color-surface-950: #080b11;
+	--color-surface-900: #0d1118;
+	--color-surface-850: #11161f;
+	--color-surface-800: #161d28;
+	--color-surface-700: #1f2937;
+	--color-edge: #233044;
+	--color-edge-strong: #324056;
+
+	--color-accent: #38bdf8;
+	--color-accent-muted: #0e7490;
+	--color-cell: #38bdf8;
+
+	--font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+}
+
+:root {
+	color-scheme: dark;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	@apply bg-surface-950 text-slate-200 antialiased;
+	font-family:
+		ui-sans-serif,
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		Roboto,
+		sans-serif;
+}
+
+/* Thin, unobtrusive scrollbars that match the dark surfaces. */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-edge-strong) transparent;
+}
+
+/* MapLibre attribution/controls tuned for the dark theme. */
+.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-attrib a {
+	@apply bg-surface-900/80 text-slate-400;
+}
+
+.maplibregl-ctrl-group {
+	@apply border border-edge bg-surface-800;
+}

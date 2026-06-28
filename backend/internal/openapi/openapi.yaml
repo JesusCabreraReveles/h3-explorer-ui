@@ -1,0 +1,593 @@
+openapi: 3.1.0
+info:
+  title: H3 Explorer API
+  description: >-
+    REST API powering H3 Explorer UI — the interactive playground for Uber's H3
+    Geospatial Indexing System. All H3 computations are performed server-side by
+    the Go backend via uber/h3-go.
+  version: 0.2.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:8080
+    description: Local development
+tags:
+  - name: H3
+    description: H3 geospatial indexing operations
+  - name: Ops
+    description: Operational endpoints
+
+paths:
+  /health:
+    get:
+      tags: [Ops]
+      summary: Liveness/readiness probe
+      operationId: getHealth
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+  /api/h3/resolutions:
+    get:
+      tags: [H3]
+      summary: List metadata for every H3 resolution (0–15)
+      operationId: getResolutions
+      responses:
+        "200":
+          description: Resolution metadata table
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [resolutions]
+                properties:
+                  resolutions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ResolutionInfo"
+
+  /api/h3/from-coordinates:
+    post:
+      tags: [H3]
+      summary: Index a coordinate to an H3 cell at a given resolution
+      operationId: fromCoordinates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FromCoordinatesRequest"
+            examples:
+              sanFrancisco:
+                value: { lat: 37.775938, lng: -122.41795, resolution: 9 }
+      responses:
+        "200":
+          description: Full cell description
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellInfo"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/to-boundary:
+    post:
+      tags: [H3]
+      summary: Get the polygon boundary ring of a cell
+      operationId: toBoundary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CellRequest"
+            examples:
+              sanFrancisco:
+                value: { index: "8928308280fffff" }
+      responses:
+        "200":
+          description: Boundary ring
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [index, boundary]
+                properties:
+                  index:
+                    type: string
+                  boundary:
+                    $ref: "#/components/schemas/Boundary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/inspect:
+    post:
+      tags: [H3]
+      summary: Inspect a cell — full geometry and topology details
+      operationId: inspect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CellRequest"
+            examples:
+              sanFrancisco:
+                value: { index: "8928308280fffff" }
+      responses:
+        "200":
+          description: Full cell description
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellInfo"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/grid-disk:
+    post:
+      tags: [H3]
+      summary: All cells within grid distance k of an origin (filled disk)
+      operationId: gridDisk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GridKRequest"
+            examples:
+              k2:
+                value: { index: "8928308280fffff", k: 2 }
+      responses:
+        "200":
+          description: Cells in the disk
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellCollection"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/grid-ring:
+    post:
+      tags: [H3]
+      summary: The hollow ring of cells at exactly grid distance k
+      operationId: gridRing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GridKRequest"
+      responses:
+        "200":
+          description: Cells in the ring
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellCollection"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/grid-path:
+    post:
+      tags: [H3]
+      summary: The line of cells connecting two cells of equal resolution
+      operationId: gridPath
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GridPathRequest"
+      responses:
+        "200":
+          description: Cells along the path
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellCollection"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/parent:
+    post:
+      tags: [H3]
+      summary: The ancestor cell at a coarser resolution
+      operationId: parent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HierarchyRequest"
+            examples:
+              toRes8:
+                value: { index: "8928308280fffff", resolution: 8 }
+      responses:
+        "200":
+          description: The parent cell geometry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellGeometry"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/children:
+    post:
+      tags: [H3]
+      summary: The descendant cells at a finer resolution
+      operationId: children
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HierarchyRequest"
+            examples:
+              toRes10:
+                value: { index: "8928308280fffff", resolution: 10 }
+      responses:
+        "200":
+          description: The child cells
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellCollection"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ResultTooLarge"
+
+  /api/h3/neighbors:
+    post:
+      tags: [H3]
+      summary: The immediately adjacent cells (ring at distance 1)
+      operationId: neighbors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CellRequest"
+      responses:
+        "200":
+          description: The neighbouring cells
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellCollection"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/h3/polygon-to-cells:
+    post:
+      tags: [H3]
+      summary: The cells covering a polygon at a resolution
+      operationId: polygonToCells
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolygonToCellsRequest"
+            examples:
+              sfBox:
+                value:
+                  resolution: 9
+                  polygon:
+                    - { lat: 37.770, lng: -122.430 }
+                    - { lat: 37.770, lng: -122.410 }
+                    - { lat: 37.790, lng: -122.410 }
+                    - { lat: 37.790, lng: -122.430 }
+      responses:
+        "200":
+          description: The covering cells
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CellCollection"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ResultTooLarge"
+
+  /api/h3/cells-to-multi-polygon:
+    post:
+      tags: [H3]
+      summary: Merge a set of cells into their multi-polygon outline
+      operationId: cellsToMultiPolygon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CellsRequest"
+            examples:
+              two:
+                value: { indexes: ["8928308280fffff", "89283082803ffff"] }
+      responses:
+        "200":
+          description: The merged outline
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MultiPolygon"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+components:
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ResultTooLarge:
+      description: The request is valid but would return too many cells
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Health:
+      type: object
+      required: [status, version, uptimeSeconds]
+      properties:
+        status:
+          type: string
+          example: ok
+        version:
+          type: string
+          example: dev
+        uptimeSeconds:
+          type: integer
+          format: int64
+
+    LatLng:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+
+    Boundary:
+      type: array
+      description: Ordered ring of boundary vertices (6 for hexagons, 5 for pentagons).
+      items:
+        $ref: "#/components/schemas/LatLng"
+
+    FromCoordinatesRequest:
+      type: object
+      required: [lat, lng, resolution]
+      properties:
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        resolution:
+          type: integer
+          minimum: 0
+          maximum: 15
+
+    CellRequest:
+      type: object
+      required: [index]
+      properties:
+        index:
+          type: string
+          description: H3 cell index in hexadecimal form.
+          example: "8928308280fffff"
+
+    GridKRequest:
+      type: object
+      required: [index, k]
+      properties:
+        index:
+          type: string
+          example: "8928308280fffff"
+        k:
+          type: integer
+          minimum: 0
+          maximum: 50
+          description: Grid radius.
+
+    GridPathRequest:
+      type: object
+      required: [origin, destination]
+      properties:
+        origin:
+          type: string
+        destination:
+          type: string
+          description: Must share the origin's resolution and be reachable.
+
+    HierarchyRequest:
+      type: object
+      required: [index, resolution]
+      properties:
+        index:
+          type: string
+        resolution:
+          type: integer
+          minimum: 0
+          maximum: 15
+          description: Target resolution (coarser for parent, finer for children).
+
+    PolygonToCellsRequest:
+      type: object
+      required: [polygon, resolution]
+      properties:
+        polygon:
+          $ref: "#/components/schemas/Boundary"
+        holes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Boundary"
+        resolution:
+          type: integer
+          minimum: 0
+          maximum: 15
+
+    CellsRequest:
+      type: object
+      required: [indexes]
+      properties:
+        indexes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+
+    CellGeometry:
+      type: object
+      description: Minimal renderable description of a cell.
+      required: [index, center, boundary]
+      properties:
+        index:
+          type: string
+        center:
+          $ref: "#/components/schemas/LatLng"
+        boundary:
+          $ref: "#/components/schemas/Boundary"
+
+    CellCollection:
+      type: object
+      required: [count, cells]
+      properties:
+        count:
+          type: integer
+        cells:
+          type: array
+          items:
+            $ref: "#/components/schemas/CellGeometry"
+
+    Polygon:
+      type: object
+      required: [outer, holes]
+      properties:
+        outer:
+          $ref: "#/components/schemas/Boundary"
+        holes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Boundary"
+
+    MultiPolygon:
+      type: object
+      required: [polygons]
+      properties:
+        polygons:
+          type: array
+          items:
+            $ref: "#/components/schemas/Polygon"
+
+    ResolutionInfo:
+      type: object
+      required: [resolution, avgAreaKm2, avgEdgeLengthKm, totalCells]
+      properties:
+        resolution:
+          type: integer
+        avgAreaKm2:
+          type: number
+          format: double
+        avgEdgeLengthKm:
+          type: number
+          format: double
+        totalCells:
+          type: integer
+
+    CellInfo:
+      type: object
+      required:
+        - index
+        - resolution
+        - center
+        - boundary
+        - areaKm2
+        - areaM2
+        - edgeLengthKm
+        - edgeLengthM
+        - baseCell
+        - icosahedronFaces
+        - isPentagon
+        - isClassIII
+        - children
+        - numChildren
+        - neighbors
+      properties:
+        index:
+          type: string
+        resolution:
+          type: integer
+        center:
+          $ref: "#/components/schemas/LatLng"
+        boundary:
+          $ref: "#/components/schemas/Boundary"
+        areaKm2:
+          type: number
+          format: double
+        areaM2:
+          type: number
+          format: double
+        edgeLengthKm:
+          type: number
+          format: double
+        edgeLengthM:
+          type: number
+          format: double
+        baseCell:
+          type: integer
+        icosahedronFaces:
+          type: array
+          items:
+            type: integer
+        isPentagon:
+          type: boolean
+        isClassIII:
+          type: boolean
+        parent:
+          type: string
+          description: Immediate parent index; omitted at resolution 0.
+        children:
+          type: array
+          items:
+            type: string
+        numChildren:
+          type: integer
+        neighbors:
+          type: array
+          items:
+            type: string
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: invalid_cell
+            message:
+              type: string
