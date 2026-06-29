@@ -228,6 +228,18 @@ curl -s localhost:8080/api/h3/inspect \
 
 ## 🧪 Development
 
+### Running the tests
+
+From the repository root you can run each test suite directly:
+
+```bash
+# backend — table-driven tests with the race detector and coverage
+(cd backend && go test -race -cover ./...)
+
+# frontend — vitest unit tests (services, utils)
+(cd frontend && npm test)
+```
+
 **Backend**
 
 ```bash
