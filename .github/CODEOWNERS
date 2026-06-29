@@ -1,0 +1,15 @@
+# Code owners for h3-explorer-ui.
+# These owners are requested for review on any pull request.
+# See https://docs.github.com/articles/about-code-owners
+
+# Default owner for everything in the repository.
+*               @JesusCabreraReveles
+
+# Backend (Go API)
+/backend/       @JesusCabreraReveles
+
+# Frontend (SvelteKit)
+/frontend/      @JesusCabreraReveles
+
+# CI / tooling
+/.github/       @JesusCabreraReveles
