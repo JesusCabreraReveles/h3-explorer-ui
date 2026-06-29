@@ -7,11 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-28
+
 ### Added
 - `SECURITY.md` with a private vulnerability disclosure policy.
 - `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`.
 - Issue and pull-request templates under `.github/`.
 - Dependabot configuration for Go, npm, GitHub Actions and Docker.
+- Root-level "Running the tests" section in the README.
+
+### Changed
+- Enabled branch protection on `master` (1 approving review, strict status
+  checks, no force-push or deletion).
 
 ## [1.1.0] - 2026-06-28
 
@@ -34,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tooling:** Docker / docker-compose stack, CI (build, race tests, lint) and a
   release workflow.
 
-[Unreleased]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JesusCabreraReveles/h3-explorer-ui/releases/tag/v1.0.0
