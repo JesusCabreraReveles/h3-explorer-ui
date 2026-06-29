@@ -1,5 +1,7 @@
-# golangci-lint configuration for the h3-explorer-ui backend.
+# golangci-lint configuration for the h3-explorer-ui backend (schema v2).
 # Run with: golangci-lint run ./...
+version: "2"
+
 run:
   timeout: 5m
   tests: true
@@ -11,8 +13,6 @@ linters:
     - ineffassign
     - staticcheck
     - unused
-    - gofmt
-    - goimports
     - revive
     - misspell
     - unconvert
@@ -22,24 +22,30 @@ linters:
     - gosec
     - nilerr
     - errorlint
-
-linters-settings:
-  goimports:
-    local-prefixes: github.com/JesusCabreraReveles/h3-explorer-ui/backend
-  revive:
+  settings:
+    revive:
+      rules:
+        - name: exported
+    gosec:
+      excludes:
+        - G104 # handled explicitly where we intentionally ignore write errors
+  exclusions:
     rules:
-      - name: exported
-        disabled: false
-  gosec:
-    excludes:
-      - G104 # handled explicitly where we intentionally ignore write errors
+      # Test files may use less strict patterns.
+      - path: _test\.go
+        linters:
+          - gosec
+          - unparam
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/JesusCabreraReveles/h3-explorer-ui/backend
 
 issues:
-  exclude-rules:
-    # Test files may use less strict patterns.
-    - path: _test\.go
-      linters:
-        - gosec
-        - unparam
   max-issues-per-linter: 0
   max-same-issues: 0
