@@ -7,6 +7,7 @@
 Explore, learn, debug and experiment with [H3](https://h3geo.org) — visually.
 
 [![CI](https://github.com/JesusCabreraReveles/h3-explorer-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/JesusCabreraReveles/h3-explorer-ui/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/JesusCabreraReveles/h3-explorer-ui?sort=semver)](https://github.com/JesusCabreraReveles/h3-explorer-ui/releases)
 [![Go Reference](https://img.shields.io/badge/go-1.26-00ADD8?logo=go)](https://go.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
