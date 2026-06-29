@@ -42,7 +42,7 @@ jobs:
         run: go test -race -coverprofile=coverage.out ./...
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
           # Pinned to match the v1 config schema in backend/.golangci.yml.
           version: v1.64.8
