@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-06-29
+
+### Fixed
+- CI now triggers on the `master` branch; it was misconfigured to `main`, so the
+  workflow had never actually run.
+- Backend: check the error returned by `resp.Body.Close()` in two places,
+  surfaced once linting started running (errcheck).
+
+### Changed
+- Upgraded golangci-lint to v2.12.2 via `golangci-lint-action@v9` and migrated
+  `backend/.golangci.yml` to the v2 config schema (required for Go 1.26).
+- Bumped GitHub Actions: `actions/checkout` v7, `actions/setup-go` v6,
+  `actions/upload-artifact` v7, `docker/login-action` v4 and
+  `docker/build-push-action` v7.
+
 ## [1.1.1] - 2026-06-28
 
 ### Added
@@ -41,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tooling:** Docker / docker-compose stack, CI (build, race tests, lint) and a
   release workflow.
 
-[Unreleased]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/JesusCabreraReveles/h3-explorer-ui/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/JesusCabreraReveles/h3-explorer-ui/releases/tag/v1.0.0
