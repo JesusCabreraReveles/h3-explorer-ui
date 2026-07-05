@@ -42,7 +42,7 @@
 		"vitest": "^4.1.9"
 	},
 	"dependencies": {
-		"h3-js": "^4.4.0",
+		"h3-js": "^4.5.0",
 		"maplibre-gl": "^5.24.0"
 	}
 }
