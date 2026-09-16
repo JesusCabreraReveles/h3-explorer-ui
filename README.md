@@ -22,6 +22,14 @@ Explore, learn, debug and experiment with [H3](https://h3geo.org) — visually.
 > with k animation, `gridPath`, `polygonToCells`, index labels), **GeoJSON /
 > CSV / index export**, and **keyboard shortcuts** throughout.
 
+## 🎬 Demo
+
+<div align="center">
+
+![H3 Explorer UI demo — inspecting a cell, animating gridDisk, tracing a gridPath](docs/demo.gif)
+
+</div>
+
 ## Motivation
 
 [H3](https://h3geo.org) is a brilliant hierarchical hexagonal grid system, but
